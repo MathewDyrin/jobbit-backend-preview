@@ -1,0 +1,12 @@
+[Unit]
+Description=Jobbit backend service
+After=network.target
+
+[Service]
+User=root
+Group=www-data
+WorkingDirectory=/home/jobbit-backend
+ExecStart=/home/jobbit-backend/venv/bin/gunicorn -w 6 jobbit.wsgi:application
+
+[Install]
+WantedBy=multi-user.target

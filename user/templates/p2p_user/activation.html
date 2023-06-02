@@ -1,0 +1,141 @@
+{% load i18n %}
+
+{% block subject %}
+    Активация аккаунта в сервисе {{ site_name }}
+{% endblock subject %}
+
+{% block styles %}
+      <style>
+        body {
+            width: 100% !important;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            margin: 0;
+            padding: 0;
+            line-height: 100%;
+        }
+        [style*="Roboto"] {font-family: 'Roboto', arial, sans-serif !important;}
+        img {
+            outline: none;
+            text-decoration: none;
+            border:none;
+            -ms-interpolation-mode: bicubic;
+            max-width: 100%!important;
+            margin: 0;
+            padding: 0;
+            display: block;
+        }
+        table td {
+            border-collapse: collapse;
+        }
+        table {
+            border-collapse: collapse;
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+        }
+    </style>
+{% endblock %}
+
+
+{% block html_body %}
+<table cellpadding="0" cellspacing="0" width="100%" style="background: #F2F2F2;">
+        <tr>
+      <td>
+        <table class="width-690" cellpadding="0" cellspacing="0" width="620px" bgcolor="#ffffff" align="center">
+          <tr>
+            <td>
+              <table class="width-570" cellpadding="0" cellspacing="0" width="570" align="center">
+                <tr>
+                  <td class="td-width-690" width="620" height="40">
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding-left: 34px;">
+                    <a href="https://grossbit.ru" target="blank">
+                      <img style="width: 100px; height: auto;" src="https://grossbit.ru/assets/logo/dark.png" alt="Logo">
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <table class="width-525" cellpadding="0" cellspacing="0" width="525" align="center">
+                      <tr>
+                        <td style="padding-top: 28px;">
+                          <p class="font-19" style="margin-top: 0;margin-bottom: 0;font-family: Arial, Helvetica, sans-serif, 'Roboto'; font-size: 19px;line-height: 19px;color: #000000;">
+                            Здравствуйте! <br /><br /> Вы запросили регистрацию в сервисе P2P Scanner
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding-top: 30px;">
+                    <table class="width-570" cellpadding="0" cellspacing="0" width="570" align="center"  style="border-radius: 8px; background: #E8EFF7;">
+                      <tr>
+                        <td class="td-padding-31" style="padding-top: 8px;padding-left: 31px;">
+                          <img style="width: 50px; height: auto;" src="https://cdn-icons-png.flaticon.com/512/893/893257.png" alt="ServiceMessage">
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="td-padding-31" style="padding-top: 12px; padding-left: 31px;">
+                          <p class="font-16" style="margin-top: 0;margin-bottom: 0;font-size: 16px;line-height: 18px;font-family: Arial, Helvetica, sans-serif, 'Roboto';color: #3C88B5;">
+                            Вы указали свой адрес электронной почты - 
+                          </p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="td-padding-59" style="padding-top: 12px;padding-left: 59px;">
+                          <p class="font-17" style="margin-top: 0;margin-bottom: 0;font-weight: 500;font-size: 17px;line-height: 18px;color: #B1D0E2;font-family: Arial, Helvetica, sans-serif, 'Roboto';">
+                            <span style="color: #3C88B5;">Email:</span> <a href="#" style="color: inherit; text-decoration: none;">{{ user }}</a>
+                          </p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="td-padding-31" style="padding-top: 12px;padding-left: 30px;padding-bottom: 10px;">
+                          <p class="font-17" style="margin-top: 0;margin-bottom: 0;font-size: 17px;line-height: 21px;font-family: Arial, Helvetica, sans-serif, 'Roboto';color: #3C88B5;">
+                            Для продолжения регистрации Вам необходимо <br /> подтвердить свой Email. <br /> Ссылка будет действительна в течение 1 дня.
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td align="center" style="padding-top: 45px;">
+                    <a href="{{ protocol }}://{{ domain }}/{{ url|safe }}" target="blank"><img style="width: 40px; height: auto;" src="https://cdn-icons-png.flaticon.com/512/8078/8078458.png" alt="Confirm"></a>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="td-padding-31" style="padding-left: 31px;padding-top: 35px;">
+                    <p class="font-18" style="margin-top: 0;margin-bottom: 0;font-size: 18px;line-height: 20px;color: #393939;font-family: Arial, Helvetica, sans-serif, 'Roboto';">
+                      Если при переходе происходит ошибка, попробуйте <br /> скопировать данный адрес и вставить его в адресную <br /> строку браузера.
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="td-padding-31" style="padding-left: 31px;padding-top: 20px;font-size: 18px;line-height: 20px;color: #000000;font-family: Arial, Helvetica, sans-serif, 'Roboto';">
+                    <p class="font-18-link width-509" style="word-wrap: break-word;width:509px;margin-top: 0;margin-bottom: 0;">
+                      <a  style="text-decoration: none;color: inherit;" href="{{ protocol }}://{{ domain }}/{{ url|safe }}" target="blank">
+                        {{ protocol }}://{{ domain }}/{{ url|safe }}
+                      </a>
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="td-padding-31" style="padding-left: 31px;padding-top: 25px;padding-bottom: 55px;">
+                    <p class="font-18" style="margin-top: 0;margin-bottom: 0;font-size: 18px;line-height: 18px;color: #000000;font-family: Arial, Helvetica, sans-serif, 'Roboto';">С уважением, команда P2P Scanner</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td width="100%" height="50">
+      </td>
+    </tr>
+    </table>
+{% endblock html_body %}
