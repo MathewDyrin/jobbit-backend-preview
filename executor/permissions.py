@@ -18,6 +18,18 @@ class ExecutorProfilePermission(IsAuthenticated):
         if view.action == 'create':
             return True
         if view.action in ['update', 'partial_update']:
+            return obj.user_id == request.user.id
+        if view.action == 'destroy':
+            return obj.user_id == request.user.id
+        
+        
+class ExecutorPortfolioAlbumPermission(IsAuthenticated):
+    def has_object_permission(self, request, view, obj):
+        if view.action in ['list', 'retrieve']:
+            return True
+        if view.action == 'create':
+            return obj.executor_profile.user_id == request.user.id
+        if view.action in ['update', 'partial_update']:
             return obj.executor_profile.user_id == request.user.id
         if view.action == 'destroy':
             return obj.executor_profile.user_id == request.user.id

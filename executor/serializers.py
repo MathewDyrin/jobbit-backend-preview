@@ -10,7 +10,7 @@ class CreateExecutorProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.ExecutorProfileModel
         fields = '__all__'
-        read_only_fields = ('is_verified', 'created_date')
+        read_only_fields = ('is_verified', 'created_date', 'balance')
 
 
 class ExecutorProfileSerializer(serializers.ModelSerializer):
@@ -19,7 +19,7 @@ class ExecutorProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.ExecutorProfileModel
         fields = '__all__'
-        read_only_fields = ('is_verified', 'created_date')
+        read_only_fields = ('is_verified', 'created_date', 'balance')
 
 
 class CreateExecutorVerificationSerializer(serializers.ModelSerializer):
@@ -105,7 +105,7 @@ class ExecutorPortfolioSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class CreateExecutorSerivceSerializer(serializers.ModelSerializer):
+class CreateExecutorServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.ExecutorServicesModel
         fields = '__all__'
@@ -120,28 +120,64 @@ class ExecutorServiceSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class CreateExecutorExperienceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.ExecutorExperienceModel
-        fields = '__all__'
-
-
 class CreateExecutorExperienceFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.ExecutorExperienceFileModel
         fields = '__all__'
 
 
-class ExecutorExperienceSerializer(serializers.ModelSerializer):
-    executor_profile = ExecutorProfileSerializer(read_only=True)
-    files = serializers.SerializerMethodField()
+class CreateExecutorExperienceSerializer(serializers.ModelSerializer):
+    files = CreateExecutorExperienceFileSerializer(many=True, read_only=False)
 
     class Meta:
         model = models.ExecutorExperienceModel
         fields = '__all__'
 
-    def get_files(self, instance):
-        return CreateExecutorExperienceFileSerializer(
-            instance.experience_files.all(),
-            many=True
-        ).data
+    def create(self, validated_data):
+        if validated_data.get('files') is not None:
+            files = [models.ExecutorExperienceFileModel(**dict(f))
+                     for f in validated_data.pop('files')]
+            files = models.ExecutorExperienceFileModel.objects.bulk_create(files)
+            obj = models.ExecutorExperienceModel.objects.create(**validated_data)
+            obj.files.set(files)
+        else:
+            obj = models.ExecutorExperienceModel.objects.create(**validated_data)
+        return obj
+
+    def update(self, instance: models.ExecutorExperienceModel, validated_data: dict):
+        if validated_data.get('files') is not None:
+            files = validated_data.pop('files')
+            instance.files.clear()
+            if len(files) > 0:
+                files = [models.ExecutorExperienceFileModel(**dict(f))
+                         for f in files]
+                files = models.ExecutorExperienceFileModel.objects.bulk_create(files)
+                instance.files.add(*files)
+
+        instance.__dict__.update(**validated_data)
+        instance.save()
+        return instance
+
+
+class ExecutorExperienceSerializer(serializers.ModelSerializer):
+    executor_profile = ExecutorProfileSerializer(read_only=True)
+    files = CreateExecutorExperienceFileSerializer(many=True)
+
+    class Meta:
+        model = models.ExecutorExperienceModel
+        fields = '__all__'
+
+
+class CreateExecutorPortfolioAlbumSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.ExecutorPortfolioAlbumModel
+        fields = '__all__'
+
+
+class ExecutorPortfolioAlbumSerializer(serializers.ModelSerializer):
+    executor_profile = ExecutorProfileSerializer(read_only=True)
+    portfolios = ExecutorPortfolioSerializer(read_only=True)
+
+    class Meta:
+        model = models.ExecutorPortfolioAlbumModel
+        fields = '__all__'

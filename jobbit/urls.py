@@ -29,4 +29,6 @@ urlpatterns = [
     path('api/v1/geo/', include('geo.urls')),
     path('api/v1/category/', include('category.urls')),
     path('api/v1/order/', include('order.urls')),
+    path('api/v1/chat/', include('chat.urls')),
+    path('', include('transactions.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

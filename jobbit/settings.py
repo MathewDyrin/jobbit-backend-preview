@@ -53,6 +53,8 @@ INSTALLED_APPS = [
     'client.apps.ClientConfig',
     'executor.apps.ExecutorConfig',
     'order.apps.OrderConfig',
+    'chat.apps.ChatConfig',
+    'transactions.apps.TransactionsConfig',
 
     # THIRD PARTY LIBS
     'rest_framework',
@@ -98,7 +100,7 @@ WSGI_APPLICATION = 'jobbit.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASE_ROUTERS = ['jobbit.routers.OrderRouter']
+# DATABASE_ROUTERS = ['jobbit.routers.OrderRouter']
 
 DATABASES = {
     "default": {
@@ -109,10 +111,10 @@ DATABASES = {
         'HOST': env('DB_HOST'),
         'PORT': env('DB_PORT')
     },
-    "order": {
-        "ENGINE": "djongo",
-        "NAME": "jobbit"
-    }
+    # "order": {
+    #     "ENGINE": "djongo",
+    #     "NAME": "jobbit"
+    # }
 }
 
 
@@ -306,3 +308,10 @@ S3_ACCESS_URL = env('S3_ACCESS_URL')
 #  Telegram BOT
 TG_BOT_TOKEN = env('TG_BOT_TOKEN')
 TG_CHAT_ID = env('TG_CHAT_ID')
+
+# Stripe settings
+STRIPE_API_KEY = env("STRIPE_API_KEY")
+
+# CryptoCloudPayments settings
+CCP_API_KEY = env("CCP_API_KEY")
+CCP_SHOP_ID = env("CCP_SHOP_ID")

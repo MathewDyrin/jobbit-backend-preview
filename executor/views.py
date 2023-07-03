@@ -2,8 +2,9 @@ from rest_framework import generics, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.core.exceptions import ObjectDoesNotExist
+from django_filters.rest_framework import DjangoFilterBackend
 
-from . import permissions, serializers, models, pagination
+from . import permissions, serializers, models, pagination, filters
 
 
 class CreateExecutorVerificationView(generics.CreateAPIView):
@@ -14,7 +15,8 @@ class CreateExecutorVerificationView(generics.CreateAPIView):
         response = dict()
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            new_executor_verification = serializer.create(serializer.validated_data)
+            new_executor_verification = serializer.create(
+                serializer.validated_data)
             response.update(self.get_serializer(instance=new_executor_verification).data)
             return Response(response, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -40,7 +42,8 @@ class ExecutorFeedbackViewSet(pagination.ExecutorFeedbackPagination, viewsets.Mo
 
     def list(self, request, *args, **kwargs):
         try:
-            executor_profile = models.ExecutorProfileModel.objects.get(id=kwargs['executor_id'])
+            executor_profile = models.ExecutorProfileModel.objects.get(
+                id=kwargs['executor_id'])
             qs = self.paginate_queryset(
                 self.get_queryset(executor_profile=executor_profile),
                 request=request,
@@ -53,7 +56,8 @@ class ExecutorFeedbackViewSet(pagination.ExecutorFeedbackPagination, viewsets.Mo
 
     def retrieve(self, request, *args, **kwargs):
         try:
-            executor_profile = models.ExecutorProfileModel.objects.get(id=kwargs['executor_id'])
+            executor_profile = models.ExecutorProfileModel.objects.get(
+                id=kwargs['executor_id'])
             qs = self.get_queryset(executor_profile=executor_profile,
                                    feedback_id=kwargs['pk'])
             data = self.get_serializer(qs).data
@@ -63,7 +67,8 @@ class ExecutorFeedbackViewSet(pagination.ExecutorFeedbackPagination, viewsets.Mo
 
     def partial_update(self, request, *args, **kwargs):
         try:
-            executor_profile = models.ExecutorProfileModel.objects.get(id=kwargs['executor_id'])
+            executor_profile = models.ExecutorProfileModel.objects.get(
+                id=kwargs['executor_id'])
             serializer = self.get_serializer(
                 self.get_queryset(executor_profile=executor_profile,
                                   feedback_id=kwargs['pk']),
@@ -79,7 +84,8 @@ class ExecutorFeedbackViewSet(pagination.ExecutorFeedbackPagination, viewsets.Mo
 
     def destroy(self, request, *args, **kwargs):
         try:
-            executor_profile = models.ExecutorProfileModel.objects.get(id=kwargs['executor_id'])
+            executor_profile = models.ExecutorProfileModel.objects.get(
+                id=kwargs['executor_id'])
             self.get_queryset(executor_profile=executor_profile,
                               feedback_id=kwargs['pk']).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -89,7 +95,8 @@ class ExecutorFeedbackViewSet(pagination.ExecutorFeedbackPagination, viewsets.Mo
     @action(methods=['POST'], detail=True)
     def answer(self, request, *args, **kwargs):
         try:
-            executor_profile = models.ExecutorProfileModel.objects.get(id=kwargs['executor_id'])
+            executor_profile = models.ExecutorProfileModel.objects.get(
+                id=kwargs['executor_id'])
             qs = self.get_queryset(executor_profile=executor_profile,
                                    feedback_id=kwargs['pk'])
             serializer = self.get_serializer(qs, request.data, partial=True)
@@ -106,6 +113,8 @@ class ExecutorProfileViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.ExecutorProfilePermission,)
     queryset = models.ExecutorProfileModel.objects.all()
     pagination_class = pagination.PageNumberPagination
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = filters.ExecutorFilters
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -145,7 +154,7 @@ class ExecutorPortfolioViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         if self.action in ['create', 'partial_update', 'update']:
-            return serializers.ExecutorPortfolioSerializer
+            return serializers.CreateExecutorPortfolioSerializer
         return super().get_serializer_class()
 
 
@@ -157,7 +166,7 @@ class ExecutorServiceViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         if self.action in ['create', 'partial_update', 'update']:
-            return serializers.CreateExecutorSerivceSerializer
+            return serializers.CreateExecutorServiceSerializer
         return super().get_serializer_class()
 
 
@@ -177,3 +186,14 @@ class ExecutorExperienceFileViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.CreateExecutorExperienceFileSerializer
     permission_classes = (permissions.ExecutorProfilePermission,)
     queryset = models.ExecutorExperienceFileModel.objects.all()
+
+
+class ExecutorPortfolioAlbumViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.ExecutorPortfolioAlbumSerializer
+    permission_classes = (permissions.ExecutorPortfolioAlbumPermission,)
+    queryset = models.ExecutorPortfolioAlbumModel.objects.all()
+    
+    def get_serializer_class(self):
+        if self.action in ['create', 'partial_update', 'update']:
+            return serializers.CreateExecutorPortfolioAlbumSerializer
+        return super().get_serializer_class()

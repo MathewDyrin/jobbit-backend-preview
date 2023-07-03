@@ -4,6 +4,9 @@
 ### migrations ###
 0*.py
 
+### vscode ###
+.vscode
+
 ### macOS ###
 # General
 .DS_Store

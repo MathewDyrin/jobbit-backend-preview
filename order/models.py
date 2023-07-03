@@ -1,9 +1,12 @@
-import typing
 import uuid
+# from djongo import models
+from django.db import models
+from django.contrib.postgres.fields import ArrayField
 
 from client.models import ClientProfileModel
 from executor.models import ExecutorProfileModel
-from djongo import models
+from geo.models import CityModel, CountryModel, SubwayModel
+from category.models import SubCategoryModel
 
 
 def gen_order_num():
@@ -13,17 +16,19 @@ def gen_order_num():
     return largest.number + 1
 
 
-class OrderSpecificModel(models.Model):
-    _id = models.ObjectIdField()
-    title = models.CharField(max_length=255)
-    text = models.TextField()
+class AllowedValuesModel(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
+    name = models.CharField(max_length=255)
 
-    class Meta:
-        db_table = 'order_specific'
-        managed = False
 
-    def __str__(self):
-        return f'{self.title}'
+# class OrderSpecificModel(models.Model):
+#     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
+#     title = models.CharField(max_length=255)
+#     subcategory_id = models.CharField(max_length=512, null=True, blank=True)
+#     allowed_values = models.ArrayField(model_container=AllowedValuesModel, default=[])
+#
+#     def __str__(self):
+#         return f'{self.title}'
 
 
 class StatusChoices(models.TextChoices):
@@ -35,6 +40,20 @@ class StatusChoices(models.TextChoices):
     EXECUTING = 'EXECUTING', 'Выполняется'
     COMPLETED = 'COMPLETED', 'Завершен'
     APPEAL = 'APPEAL', 'Апелляция'
+    
+    
+class OrderModelGeoMixin(models.Model):
+    country = models.ForeignKey(CountryModel, related_name='orders', null=True, on_delete=models.SET_NULL)
+    city = models.ForeignKey(CityModel, related_name='orders', null=True, on_delete=models.SET_NULL)
+    street = models.CharField('Улица', max_length=255, null=True, blank=True)
+    house = models.CharField('Дом', max_length=255, null=True, blank=True)
+    office = models.CharField('Офис', max_length=255, null=True, blank=True)
+    longitude = models.FloatField('Долгота', default=0, null=True, blank=True)
+    latitude = models.FloatField('Широта', default=0, null=True, blank=True)
+    subway = models.ForeignKey(SubwayModel, related_name='orders', null=True, on_delete=models.SET_NULL)
+    
+    class Meta:
+        db_table = 'order_geo'
 
 
 class OrderModel(models.Model):
@@ -43,12 +62,9 @@ class OrderModel(models.Model):
     description = models.TextField('Описание')
     created_at = models.DateTimeField('Время создания', auto_now_add=True)
     updated_at = models.DateTimeField('Время последнего обновления', auto_now=True)
-    longitude = models.FloatField('Долгота', default=0)
-    latitude = models.FloatField('Широта', default=0)
     budget = models.FloatField('Бюджет', null=True, blank=True)
     start_date = models.DateField('Дата когда нужно приступить', null=True, blank=True)
     end_date = models.DateField('Дата когда нужно закончить', null=True, blank=True)
-    comment = models.TextField('Комментарий к заказу', null=True, blank=True, default='')
     status = models.CharField(
         max_length=99,
         choices=StatusChoices.choices,
@@ -69,8 +85,11 @@ class OrderModel(models.Model):
         null=True,
         blank=True
     )
-    specifics = models.ArrayField(model_container=OrderSpecificModel)
-    objects = models.DjongoManager()
+    # specifics = models.ArrayField(model_container=OrderSpecificModel)
+    # objects = models.DjongoManager()
+
+    # Response cost
+    response_cost = models.FloatField(default=1)
 
     class Meta:
         db_table = 'order'

@@ -41,6 +41,9 @@ class ExecutorProfileModel(models.Model):
     created_date = models.DateField(auto_now_add=True)
     avatar = models.URLField(null=True, blank=True)
 
+    # Balance
+    balance = models.FloatField(default=0.0)
+
     class Meta:
         db_table = 'executor_profile'
         verbose_name = 'Профиль исполнителя'
@@ -48,6 +51,20 @@ class ExecutorProfileModel(models.Model):
 
     def __str__(self):
         return str(self.email)
+
+
+class ExecutorExperienceFileModel(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=100)
+    photo = models.URLField()
+
+    class Meta:
+        db_table = 'executor_experience_file'
+        verbose_name = 'Файл опыта исполнителя'
+        verbose_name_plural = 'Файлы опытов исполнителей'
+
+    def __str__(self):
+        return str(self.name)
 
 
 class ExecutorExperienceModel(models.Model):
@@ -63,30 +80,17 @@ class ExecutorExperienceModel(models.Model):
         related_name='executor_experiences',
         on_delete=models.CASCADE
     )
+    files = models.ManyToManyField(
+        to=ExecutorExperienceFileModel,
+        related_name='experiences',
+        null=True,
+        blank=True
+    )
 
     class Meta:
         db_table = 'executor_experience'
         verbose_name = 'Опыт исполнителя'
         verbose_name_plural = 'Опыты исполнителей'
-
-    def __str__(self):
-        return str(self.name)
-
-
-class ExecutorExperienceFileModel(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=100)
-    photo = models.URLField()
-    experience_entity = models.ForeignKey(
-        to=ExecutorExperienceModel,
-        related_name='experience_files',
-        on_delete=models.CASCADE
-    )
-
-    class Meta:
-        db_table = 'executor_experience_file'
-        verbose_name = 'Файл опыта исполнителя'
-        verbose_name_plural = 'Файлы опытов исполнителей'
 
     def __str__(self):
         return str(self.name)
@@ -272,3 +276,18 @@ class ExecutorVerificationModel(models.Model):
             super().save(*args, **kwargs)
         else:
             raise Exception('Возраст должен быть больше 18')
+
+
+class ExecutorPortfolioAlbumModel(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255)
+    portfolios = models.ForeignKey(ExecutorPortfolioModel, on_delete=models.CASCADE, null=True)
+    executor_profile = models.ForeignKey(ExecutorProfileModel, on_delete=models.CASCADE)
+    
+    class Meta:
+        db_table = 'executor_portfolio_album'
+        verbose_name = 'Альбом портфолио исполнителя'
+        verbose_name_plural = 'Альбомы портфолио исполнителей'
+    
+    def __str__(self) -> str:
+        return self.name
